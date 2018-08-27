@@ -1,0 +1,2 @@
+# Hufmancode
+first
