@@ -1,9 +1,12 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include<iostream>
+using namespace std;
 #define MAXSIZE 515
 #define ASCLLNUM 256
-char *hastb[ASCLLNUM] ;
+
+int num[ASCLLNUM][ASCLLNUM];  
 typedef struct node {
 	int data;//½áµãÆµÂÊ
 	unsigned char c;//½áµã×Ö·û
@@ -15,6 +18,22 @@ typedef struct ascll{
 	int count;//·ûºÅ¸öÊı
 	unsigned  char sign;//·ûºÅ
 }Ascll;
+void show(){
+	printf("                   ¹ş·òÂü±àÂëÒëÂë                  \n\n");
+	printf("¹¦ÄÜ£º\n");
+	printf("     1.×Ö·ûÆµÂÊµÄÉıĞòÊä³ö\n");
+	printf("     2.¹ş·òÂüÊ÷µÄÇ°Ğò±éÀú\n");
+	printf("     3.¹ş·òÂüÊ÷µÄÖĞĞò±éÀú\n");
+	printf("     4.¹ş·òÂüÊ÷µÄºóĞò±éÀú\n");
+	printf("     5.Êä³ö¹ş·òÂüÊ÷µÄ±àÂë\n");
+	printf("     6.Ñ¹Ëõ£¨Í·ÎÄ¼ş£©\n");
+	printf("     7.½âÑ¹Ëõ\n");
+	printf("     8.ÍË³ö³ÌĞò\n");
+	printf("×¢Òâ£ºÊ¹ÓÃ±¾³ÌĞòÊ¹ÇëÊäÈëÍêÕûÂ·¾¶\n\n");
+	printf("ÇëÑ¡Ôñ²Ù×÷£º"); 
+	 
+	
+} 
 //ÕûĞÎÊı×éºÍ×Ö·ûÊı×éµÄÏà»¥×ª»» 
 void Changing(int *i, char *c, int len)
 {//iÎªÕûĞÎÊı×é£¬cÎªÒª´æ·Å×Ö·û´®µÄÊı×é£¬lenÎªÕûĞÎÊı×éÔªËØ¸öÊı
@@ -45,7 +64,7 @@ BSTree *CreateLinkList(Ascll ascll[],int val) { //¸ù¾İÒ¶×Ó½áµãµÄÈ¨ÖµÉú³ÉÒ»¸öÉıĞò
 	s->rchild=NULL;//ÖÃ×ó¡¢ÓÒº¢×ÓÖ¸ÕëÎª¿ÕµÄÒ¶½áµã±êÖ¾
 	s->next=NULL;//ÖÃµ¥Á´±íÁ´Î²½áµã±êÖ¾
 	link->next=s;
-	for(j=2; j<=val; j++) { //Éú³Éµ¥Á´±íÊ£ÓàµÄtotal-1¸öÊı¾İ½áµã
+	for(j=2; j<=  val; j++) { //Éú³Éµ¥Á´±íÊ£ÓàµÄtotal-1¸öÊı¾İ½áµã
 		s=(BSTree*)malloc(sizeof(BSTree));//Éú³ÉÒ»¸öÊı¾İ½áµã
 		for(int i=0;i<ASCLLNUM;i++){
 			if(ascll[i].count>0&&i>ok){
@@ -115,11 +134,44 @@ BSTree *HuffTree(BSTree *link) { //Éú³É¹ş·òÂüÊ÷
 	}
 	return s;//µ±µ¥Á´±íÎª¿ÕÊ±£¬×îºóÉú³ÉµÄÊ÷Ö¦½áµã¼´Îª¹ş·òÂüÊ÷µÄ¸ù½Úµã
 }
-
-void HuffCode(BSTree *p,char* hastb[ASCLLNUM]) { //ºóĞò±éÀú¹ş·òÂüÊ÷²¢Êä³ö¹ş·òÂüÊ÷±àÂë
+//Êä³ö½áµãµÄÖµ 
+void display(BSTree *elem){
+	printf("%d ",elem->data);
+}
+//Ç°Ğò±éÀú
+void  Preordertraversal(BSTree *q){
+	if(q){
+	display(q);
+	Preordertraversal(q->lchild);
+	Preordertraversal(q->rchild);
+	}
+}
+//ÖĞĞò±éÀú
+void Inordertraversal(BSTree *q){
+	if(q){
+	Inordertraversal(q->lchild);
+	display(q);
+	Inordertraversal(q->rchild);
+	}
+} 
+//ºóĞò±éÀú
+void Postordertraversal(BSTree *q){
+	if(q){
+		Postordertraversal(q->lchild);
+		Postordertraversal(q->rchild);
+		display(q);
+	}
+} 
+void HuffCode(BSTree *p,Ascll ascll[]) { //ºóĞò±éÀú¹ş·òÂüÊ÷²¢Êä³ö¹ş·òÂüÊ÷±àÂë
+	char **hastb = (char **)malloc(ASCLLNUM * sizeof(char*));
 	BSTree *stack[MAXSIZE],*q;
 	int b,i=-1,j=0,k;
 	int code[MAXSIZE];
+	int t = 0;
+	for (i = 0; i < ASCLLNUM; i++)
+	{
+		hastb[i] = NULL;
+	}
 	do { //ºóĞò±éÀú¶ş²æÊ÷
 		while(p!=NULL) { //½«*p½áµã×ó·ÖÖ§ÉÏµÄ×óº¢×ÓÈëÕ»
 			if(p->lchild==NULL&&p->rchild==NULL) {
@@ -130,17 +182,24 @@ void HuffCode(BSTree *p,char* hastb[ASCLLNUM]) { //ºóĞò±éÀú¹ş·òÂüÊ÷²¢Êä³ö¹ş·òÂüÊ
 				for(k=0;k<j;k++){
 					printf("%d",code[k]);
 				}
-				Changing(code,change,j);
-				change[j]='\0';
-				hastb[p->c]=change;
-				printf(" %s",hastb[p->c]);
+//				Changing(code,change,j);
+//				change[j]='\0';
+//				hastb[(int)p->c]=change;
+//				printf("***%c",p->c); 
+//				printf(" %s",hastb[(int)p->c]);
 				printf("\n");
+//				for(int i=0;i<ASCLLNUM;i++){
+//					if(ascll[i].count>0 && hastb[i] != NULL)
+//						printf("***%s\n",hastb[i]);
+//				}
 				j--;
 			}
 			stack[++i]=p;//Ö¸Ïòµ±Ç°½áµãµÄÖ¸ÕëpÈëÕ»
 			p=p->lchild;//pÖ¸Ïò*pµÄ×óº¢×Ó
 			code[j++]=0;//¶ÔÓ¦µÄ×ó·ÖÖ§ÖÃ±àÂë0
+			
 		}
+	
 		//Õ»¶¥½áµãÒÑÃ»ÓĞ×óº¢×Ó»òÆä×ó×ÓÊ÷ÉÏµÄ½áµã¶¼ÒÑ·ÃÎÊ¹ı
 		q=NULL;
 		b=1;//ÖÃÒÑ·ÃÎÊ¹ıµÄ±ê¼Ç
@@ -157,19 +216,41 @@ void HuffCode(BSTree *p,char* hastb[ASCLLNUM]) { //ºóĞò±éÀú¹ş·òÂüÊ÷²¢Êä³ö¹ş·òÂüÊ
 			}
 		}
 	} while(i>=0);//µ±Õ»stack·Ç¿ÕÊ±¼ÌĞø±éÀú
+	for(int i=0;i<ASCLLNUM;i++) {
+		printf("%s",hastb[i]);
+	}
+	
 }
 
-void compress(){
+void compress(char x){
 	FILE *infile,
 		*outfile;
 	//³õÊ¼»¯
-	for(int i=0;i<ASCLLNUM;i++){
-		hastb[i]=new char[MAXSIZE];
-	}
+//	for(int i=0;i<ASCLLNUM;i++){
+//		hastb[i]=new char[MAXSIZE];
+//	}
 	char intfName[MAXSIZE],outfName[MAXSIZE];
 	printf("ÇëÊäÈëÎÄ¼şÂ·¾¶£º\n");
 	scanf("%s",intfName);
 	infile=fopen(intfName,"rb");
+	while(infile==NULL){
+		printf("ÄúÊäÈëµÄÎÄ¼ş´íÎó»ò²»´æÔÚ\n");
+		printf("ÖØĞÂÊäÈëÒª¶ÁÈ¡µÄÎÄ¼ş°´1  ·µ»ØÖ÷²Ëµ¥°´2\n");
+		char ob;
+		scanf("%c",&ob);
+		getchar();
+		while(ob!='1'&&ob!='2'){
+			printf("ÄúµÄÊäÈëÓĞÎó£¬ÇëÖØĞÂÊäÈë\n");
+			printf("ÖØĞÂÊäÈëÒª¶ÁÈ¡µÄÎÄ¼ş°´1  ·µ»ØÖ÷²Ëµ¥°´2\n");
+			scanf("%c",&ob);
+		}
+		if(ob=='2'){
+			return;
+		}
+		printf("ÇëÊäÈëÎÄ¼şÂ·¾¶£º\n");
+	    scanf("%s",intfName);
+		infile=fopen(intfName,"rb");
+	}
 	strcpy(outfName,intfName);
 	strcat(outfName,".txt");
 	outfile=fopen(outfName,"wb");
@@ -190,41 +271,75 @@ void compress(){
 	for(int i=0;i<ASCLLNUM;i++){
 		if(ascll[i].count>0){
 			val++;
-			printf("·ûºÅ£º%c ÆµÊı£º%d\n",ascll[i].sign,ascll[i].count);
 		}
 	}
 	BSTree *q;
 	q=CreateLinkList(ascll,val);
-	print(q);
+	
+	if(x=='1'){
+		print(q);
+	}
 	q=HuffTree(q);
-	HuffCode(q,hastb);
-	fclose(infile);
-	fclose(outfile);
-	//Ñ¹ËõÍ·ÎÄ¼ş
+	if(x=='2'){
+		Preordertraversal(q);
+	}
+	if(x=='3'){
+		Inordertraversal(q);
+	}
+	if(x=='4'){
+		Postordertraversal(q);
+	}
+	if(x=='5'){
+		HuffCode(q,ascll);
+	}
+	if(x=='6'){
+		//Ñ¹ËõÍ·ÎÄ¼ş
 	outfile=fopen(outfName,"wb");
 	fprintf(outfile,"%d",total);
 	for(int i=0;i<ASCLLNUM;i++){
 		fprintf(outfile,"%d",ascll[i].count);
 	}
+	}
+	if(x=='7'){
+		printf("ÇëµÈ´ıÏÂ´Î¸üĞÂ£¬Ğ»Ğ»\n");
+	}
+	if(x=='8'){
+		printf("Ğ»Ğ»Ê¹ÓÃ£¬²»ÒªÍü¼Ç¶©ÔÄÅ¶£¡\n");
+		return;
+	}
+//	for(int i=0;i<ASCLLNUM;i++){
+//		if(ascll[i].count>0)
+//		printf("%s\n",hastb[i]);
+//	}
+	
+//	printf("%s\n\n",hastb['h']);
+	
+//	for(int i=0;i<ASCLLNUM;i++) {
+//		if(ascll[i].count > 0)
+//			printf("%s\n",hastb[i]);
+//	}
+//	fclose(infile);
+//	fclose(outfile);
+	
 	//Ñ¹ËõÖ÷ÎÄ¼ş
 	fseek(infile,0,0);//´ÓÍ·¿ªÊ¼¶Á
 	while(!feof(infile)){
 		c=fgetc(infile);
 	} 
+	fclose(infile);
+	fclose(outfile);
 }
 int main() {
-	/*BSTree *root;
-	int n;
-
-	while(printf("ÊäÈëÒ¶×Ó½áµãµÄ¸öÊı\n")&&scanf("%d",&n)!=EOF){  //Á¬ĞøÊäÈë
-	printf("ÊäÈën¸öÒ¶×Ó½áµãµÄÈ¨Öµ:\n");
-	root=CreateLinkList(n);//Éú³ÉÒ»¸öÉıĞòµ¥Á´±í
-	printf("Êä³öËùÉú³ÉµÄÉıĞòµ¥Á´±í:\n");
-	print(root);
-	root=HuffTree(root);//Éú³É¹ş·òÂüÊ÷
-	printf("ºóĞò±éÀú¹ş·òÂüÊ÷¹¹Ôì²¢Êä³ö¹ş·òÂü±àÂë:\n");
-	HuffCode(root);
-	}*/
-	compress();
-	return 0;
+	
+    show(); 
+    char obtion;
+    cin>>obtion;
+    while(obtion!='1'&&obtion!='2'&&obtion!='3'&&obtion!='4'&&obtion!='5'&&obtion!='6'&&obtion!='7'&&obtion!='8'){
+    	printf("ÎŞĞ§²Ù×÷£¬pleaseÖØĞÂÊäÈë:\n");
+    	cin>>obtion;
+	}
+	compress(obtion);
+	system("cls");
 }
+
+//C:\Users\Íõ½ÌÊÚ\Desktop\test2.txt
