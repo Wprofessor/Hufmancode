@@ -7,6 +7,7 @@ using namespace std;
 #define ASCLLNUM 256
 
 int num[ASCLLNUM][ASCLLNUM];  
+char **hastb = (char **)malloc(ASCLLNUM * sizeof(char*));
 typedef struct node {
 	int data;//结点频率
 	unsigned char c;//结点字符
@@ -39,11 +40,19 @@ void Changing(int *i, char *c, int len)
 {//i为整形数组，c为要存放字符串的数组，len为整形数组元素个数
     int k;
     char tmp[10];
+    
     for(k=0;k<len;k++)
     {
-        itoa(i[k],tmp,10);
-        strcat(c,tmp);
+    	itoa(i[k],tmp,10);
+    	if(k==0){
+    		strcpy(c,tmp);
+		}else{
+//			printf("测试%s",tmp); 
+        	strcat(c,tmp);
+		}
+         
     }
+    
 }
 BSTree *CreateLinkList(Ascll ascll[],int val) { //根据叶子结点的权值生成一个升序单链表
 	BSTree *link,*p,*q,*s;
@@ -64,7 +73,7 @@ BSTree *CreateLinkList(Ascll ascll[],int val) { //根据叶子结点的权值生成一个升序
 	s->rchild=NULL;//置左、右孩子指针为空的叶结点标志
 	s->next=NULL;//置单链表链尾结点标志
 	link->next=s;
-	for(j=2; j<=  val; j++) { //生成单链表剩余的total-1个数据结点
+	for(j=2; j<=  val; j++) { //生成单链表剩余的val-1个数据结点
 		s=(BSTree*)malloc(sizeof(BSTree));//生成一个数据结点
 		for(int i=0;i<ASCLLNUM;i++){
 			if(ascll[i].count>0&&i>ok){
@@ -162,8 +171,7 @@ void Postordertraversal(BSTree *q){
 		display(q);
 	}
 } 
-void HuffCode(BSTree *p,Ascll ascll[]) { //后序遍历哈夫曼树并输出哈夫曼树编码
-	char **hastb = (char **)malloc(ASCLLNUM * sizeof(char*));
+void HuffCode(BSTree *p,Ascll ascll[],bool panduan) { //后序遍历哈夫曼树并输出哈夫曼树编码
 	BSTree *stack[MAXSIZE],*q;
 	int b,i=-1,j=0,k;
 	int code[MAXSIZE];
@@ -173,25 +181,26 @@ void HuffCode(BSTree *p,Ascll ascll[]) { //后序遍历哈夫曼树并输出哈夫曼树编码
 		hastb[i] = NULL;
 	}
 	do { //后序遍历二叉树
+	int count = 0 ;
+	//C:\Users\王教授\Desktop\test2.txt
 		while(p!=NULL) { //将*p结点左分支上的左孩子入栈
+		
 			if(p->lchild==NULL&&p->rchild==NULL) {
+				hastb[(int)p->c] =(char *)malloc(10);
+				if(panduan){
 				printf("叶子结点%c频率=%d,编码:",p->c,p->data);//输出叶子结点信息
 				//输出该叶结点的哈夫曼编码
-				char change[MAXSIZE]="";
-				
 				for(k=0;k<j;k++){
 					printf("%d",code[k]);
 				}
-//				Changing(code,change,j);
+				cout<<endl;
+				}
+//				printf("\n");
+				Changing(code,hastb[(int)p->c],j);
 //				change[j]='\0';
 //				hastb[(int)p->c]=change;
-//				printf("***%c",p->c); 
 //				printf(" %s",hastb[(int)p->c]);
-				printf("\n");
-//				for(int i=0;i<ASCLLNUM;i++){
-//					if(ascll[i].count>0 && hastb[i] != NULL)
-//						printf("***%s\n",hastb[i]);
-//				}
+//				printf("\n");
 				j--;
 			}
 			stack[++i]=p;//指向当前结点的指针p入栈
@@ -216,10 +225,6 @@ void HuffCode(BSTree *p,Ascll ascll[]) { //后序遍历哈夫曼树并输出哈夫曼树编码
 			}
 		}
 	} while(i>=0);//当栈stack非空时继续遍历
-	for(int i=0;i<ASCLLNUM;i++) {
-		printf("%s",hastb[i]);
-	}
-	
 }
 
 void compress(char x){
@@ -231,25 +236,26 @@ void compress(char x){
 //	}
 	char intfName[MAXSIZE],outfName[MAXSIZE];
 	printf("请输入文件路径：\n");
-	scanf("%s",intfName);
+	cin>>intfName;
 	infile=fopen(intfName,"rb");
 	while(infile==NULL){
 		printf("您输入的文件错误或不存在\n");
 		printf("重新输入要读取的文件按1  返回主菜单按2\n");
 		char ob;
-		scanf("%c",&ob);
-		getchar();
+		cin>>ob;
 		while(ob!='1'&&ob!='2'){
-			printf("您的输入有误，请重新输入\n");
-			printf("重新输入要读取的文件按1  返回主菜单按2\n");
-			scanf("%c",&ob);
+			cout<<"您的输入有误，请重新输入"<<endl;
+			cout<<"重新输入要读取的文件按1  返回主菜单按2"<<endl;
+			cin>>ob;
 		}
 		if(ob=='2'){
 			return;
 		}
-		printf("请输入文件路径：\n");
-	    scanf("%s",intfName);
+		else{
+		cout<<"请输入文件路径:"<<endl;
+	    cin>>intfName;
 		infile=fopen(intfName,"rb");
+		}
 	}
 	strcpy(outfName,intfName);
 	strcat(outfName,".txt");
@@ -278,19 +284,23 @@ void compress(char x){
 	
 	if(x=='1'){
 		print(q);
+		
 	}
 	q=HuffTree(q);
 	if(x=='2'){
 		Preordertraversal(q);
+		cout<<endl;
 	}
 	if(x=='3'){
 		Inordertraversal(q);
+		cout<<endl;
 	}
 	if(x=='4'){
 		Postordertraversal(q);
+		cout<<endl;
 	}
 	if(x=='5'){
-		HuffCode(q,ascll);
+		HuffCode(q,ascll,true);
 	}
 	if(x=='6'){
 		//压缩头文件
@@ -307,10 +317,7 @@ void compress(char x){
 		printf("谢谢使用，不要忘记订阅哦！\n");
 		return;
 	}
-//	for(int i=0;i<ASCLLNUM;i++){
-//		if(ascll[i].count>0)
-//		printf("%s\n",hastb[i]);
-//	}
+	
 	
 //	printf("%s\n\n",hastb['h']);
 	
@@ -330,16 +337,50 @@ void compress(char x){
 	fclose(outfile);
 }
 int main() {
-	
+	int value=0;
+	while(1){
+	value++;
+	if(value==1){
     show(); 
+	}
+	else{
+		cout<<"请选择操作"<<endl;
+	}
     char obtion;
     cin>>obtion;
     while(obtion!='1'&&obtion!='2'&&obtion!='3'&&obtion!='4'&&obtion!='5'&&obtion!='6'&&obtion!='7'&&obtion!='8'){
     	printf("无效操作，please重新输入:\n");
     	cin>>obtion;
 	}
-	compress(obtion);
-	system("cls");
+	switch(obtion){
+		case '1':
+			compress('1');
+			break;
+		case '2':
+			compress('2');
+			break;	
+		case '3':
+			compress('3');
+			break;	
+		case '4':
+			compress('4');
+			break;	
+		case '5':
+			compress('5');
+			break;
+		case '6':
+			compress('6');
+			break;	
+		case '7':
+			compress('7');
+			break;	
+		case '8':
+			compress('8');
+			return 0;	
+	}
+	
+	
+}
 }
 
 //C:\Users\王教授\Desktop\test2.txt
